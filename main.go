@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -11,17 +12,31 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Использование: godl https://example.com filename.png")
-		os.Exit(1)
+		fmt.Println("Использование: godl [-u url] [-n filename]")
+		os.Exit(0)
 	}
 
-	dl.FileUrl = os.Args[1]
+	var filename string
+	flag.StringVar(&dl.FileUrl, "u", "nil", "Указать URL-адрес")
+	flag.StringVar(&filename, "n", "nil", "Указать пользовательское название файла")
+	flag.Parse()
 
-	if len(os.Args) == 3 {
-		dl.FileName = os.Args[2]
-	} else {
+	if dl.FileUrl == "nil" && filename == "nil" {
+		dl.FileUrl = os.Args[1]
 		r, _ := http.NewRequest("GET", dl.FileUrl, nil)
 		dl.FileName = path.Base(r.URL.Path)
+	}
+
+	if dl.FileUrl == "nil" {
+		fmt.Println("Использование: godl [-u url] [-n filename]")
+		os.Exit(0)
+	}
+
+	if filename == "nil" {
+		r, _ := http.NewRequest("GET", dl.FileUrl, nil)
+		dl.FileName = path.Base(r.URL.Path)
+	} else {
+		dl.FileName = filename
 	}
 
 	fmt.Print("Загрузка файла ", dl.FileName, "...")

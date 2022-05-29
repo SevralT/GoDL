@@ -1,7 +1,9 @@
 package dl
 
 import (
+	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 
@@ -42,4 +44,15 @@ func Connected() (ok bool) {
 		return false
 	}
 	return true
+}
+
+func Stdout(url string) error {
+	resp, _ := http.Get(FileUrl)
+	defer resp.Body.Close()
+
+	body, _ := ioutil.ReadAll(resp.Body)
+	bodyString := string(body)
+
+	fmt.Println(bodyString)
+	return nil
 }

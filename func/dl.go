@@ -35,3 +35,11 @@ func DownloadFile(url string, filepath string) error {
 	os.Rename(FileName+".godl", FileName)
 	return nil
 }
+
+func Connected() (ok bool) {
+	_, err := http.Get(FileUrl)
+	if err != nil {
+		return false
+	}
+	return true
+}

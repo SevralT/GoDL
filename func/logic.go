@@ -84,3 +84,21 @@ func FileExist(filename string) error {
 	}
 	return nil
 }
+
+// Detect content type
+func GetFileContentType(seeker io.ReadSeeker) (string, error) {
+	buffer := make([]byte, 512)
+
+	_, err := seeker.Seek(0, io.SeekStart)
+	if err != nil {
+		return "", err
+	}
+
+	bytesRead, err := seeker.Read(buffer)
+	if err != nil && err != io.EOF {
+		return "", err
+	}
+
+	buffer = buffer[:bytesRead]
+	return http.DetectContentType(buffer), nil
+}

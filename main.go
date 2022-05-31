@@ -20,7 +20,7 @@ func main() {
 	userLanguage, _ := locale.GetLanguage()
 
 	// Locatization
-	var usage, finished, check_internet_connection, connected, override string
+	var usage, finished, check_internet_connection, connected, override, ver, c_type string
 	if userLanguage == "ru" {
 		usage = "Использование: godl [ПАРАМЕТРЫ]... [URL]...\n"
 		logic.File_download = "Загрузка файла"
@@ -28,6 +28,8 @@ func main() {
 		check_internet_connection = "Ошибка: Проверьте подключение к интернету!"
 		connected = "Соединение установлено!"
 		override = "Ошибка: Такой файл уже существует! Если вы хотите его перезаписать, используйте -override.\n"
+		ver = "Версия программы - 1.0.0"
+		c_type = "Тип контента:"
 	} else if userLanguage == "uk" {
 		usage = "Використання: godl [ПАРАМЕТРИ]... [URL]..."
 		logic.File_download = "Завантаження файлу"
@@ -35,6 +37,8 @@ func main() {
 		check_internet_connection = "Помилка: Перевірте підключення до інтернету!"
 		connected = "З'єднання встановлено!"
 		override = "Помилка: Такий файл вже існує! Якщо ви бажаєте його перезаписати, використовуйте -override.\n"
+		ver = "Версія програми – 1.0.0"
+		c_type = "Тип контенту:"
 	} else {
 		usage = "Usage: godl [OPTIONS]... [URL]..."
 		logic.File_download = "Downloading file"
@@ -42,6 +46,8 @@ func main() {
 		check_internet_connection = "Error: Check internet connection!"
 		connected = "Connection established!"
 		override = "Error: Such file already exists! If you want to overwrite it, use --override or -o."
+		ver = "Program version - 1.0.0"
+		c_type = "Content Type:"
 	}
 
 	// Set custom message on error
@@ -53,17 +59,24 @@ func main() {
 
 	// Set flags and args
 	var filename string
-	var stdout, hash, override_bool bool
+	var stdout, hash, override_bool, version bool
 	flag.StringVarP(&filename, "name", "n", "", "Указать пользовательское название файла")
 	flag.BoolVarP(&logic.Progress, "progress", "p", false, "Использовать прогресс-бар")
 	flag.BoolVarP(&stdout, "stdout", "s", false, "Вывести содержимое через stdout")
 	flag.BoolVarP(&hash, "hash", "h", false, "Посчитать sha2sum для выходного файла")
 	flag.BoolVarP(&override_bool, "override", "o", false, "Перезаписывать существующий файл")
 	flag.BoolVarP(&logic.QuiteMode, "quite", "q", false, "Тихий режим")
+	flag.BoolVarP(&version, "version", "v", false, "Номер версии программы")
 
 	flag.Parse()
 
 	logic.FileUrl = flag.Arg(0)
+
+	// Version number
+	if version && len(os.Args) == 2 {
+		fmt.Println(ver)
+		os.Exit(0)
+	}
 
 	// Check for args amount
 	if len(os.Args) < 2 {
@@ -101,6 +114,10 @@ func main() {
 	} else {
 		logic.DownloadFile(logic.FileUrl, logic.FileName)
 		if logic.QuiteMode == false {
+			file, _ := os.Open(logic.FileName)
+			defer file.Close()
+			contentType, _ := logic.GetFileContentType(file)
+			fmt.Println(c_type, contentType)
 			fmt.Println(logic.File_download, logic.FileName, finished)
 		}
 		// Optionally calculate sha2sum

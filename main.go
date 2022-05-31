@@ -46,7 +46,7 @@ func main() {
 
 	// Set custom message on error
 	flag.Usage = func() {
-		fmt.Printf(usage)
+		fmt.Print(usage)
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
@@ -59,6 +59,7 @@ func main() {
 	flag.BoolVarP(&stdout, "stdout", "s", false, "Вывести содержимое через stdout")
 	flag.BoolVarP(&hash, "hash", "h", false, "Посчитать sha2sum для выходного файла")
 	flag.BoolVarP(&override_bool, "override", "o", false, "Перезаписывать существующий файл")
+	flag.BoolVarP(&logic.QuiteMode, "quite", "q", false, "Тихий режим")
 
 	flag.Parse()
 
@@ -66,7 +67,7 @@ func main() {
 
 	// Check for args amount
 	if len(os.Args) < 2 {
-		fmt.Printf(usage)
+		fmt.Print(usage)
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
@@ -81,7 +82,7 @@ func main() {
 
 	// Check if exists
 	logic.FileExist(logic.FileName)
-	if logic.Exists == true && override_bool == false {
+	if logic.Exists && !override_bool {
 		fmt.Println(override)
 		os.Exit(0)
 	}
@@ -90,18 +91,20 @@ func main() {
 	if !logic.Connected() {
 		fmt.Println(check_internet_connection)
 		os.Exit(0)
-	} else {
+	} else if !logic.QuiteMode {
 		println(connected)
 	}
 
 	// Use stdout or download file
-	if stdout == true {
+	if stdout {
 		logic.Stdout(logic.FileUrl)
 	} else {
 		logic.DownloadFile(logic.FileUrl, logic.FileName)
-		fmt.Println(logic.File_download, logic.FileName, finished)
+		if logic.QuiteMode == false {
+			fmt.Println(logic.File_download, logic.FileName, finished)
+		}
 		// Optionally calculate sha2sum
-		if hash == true {
+		if hash {
 			hasher := sha256.New()
 			s, _ := ioutil.ReadFile(logic.FileName)
 			hasher.Write(s)

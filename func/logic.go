@@ -13,7 +13,7 @@ import (
 
 // Set global variables
 var FileName, FileUrl, File_download string
-var Progress, Exists bool
+var Progress, Exists, QuiteMode bool
 
 // Function for file download
 func DownloadFile(url string, filepath string) error {
@@ -27,11 +27,15 @@ func DownloadFile(url string, filepath string) error {
 
 	// Use progress bar or no
 	if Progress == false {
-		total := progressbar.DefaultBytes(
-			-1,
-			File_download,
-		)
-		io.Copy(io.MultiWriter(temp, total), resp.Body)
+		if QuiteMode == false {
+			total := progressbar.DefaultBytes(
+				-1,
+				File_download,
+			)
+			io.Copy(io.MultiWriter(temp, total), resp.Body)
+		} else {
+			io.Copy(io.MultiWriter(temp), resp.Body)
+		}
 	} else if Progress == true {
 		bar := progressbar.DefaultBytes(
 			resp.ContentLength,

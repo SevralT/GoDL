@@ -13,7 +13,7 @@ import (
 
 // Set global variables
 var FileName, FileUrl, File_download string
-var Progress bool
+var Progress, Exists bool
 
 // Function for file download
 func DownloadFile(url string, filepath string) error {
@@ -67,5 +67,16 @@ func Stdout(url string) error {
 
 	// Output file content
 	fmt.Println(bodyString)
+	return nil
+}
+
+// Check if file exists
+func FileExist(filename string) error {
+	_, err := os.Stat(FileName)
+	if os.IsNotExist(err) {
+		Exists = false
+	} else {
+		Exists = true
+	}
 	return nil
 }

@@ -20,25 +20,28 @@ func main() {
 	userLanguage, _ := locale.GetLanguage()
 
 	// Locatization
-	var usage, finished, check_internet_connection, connected string
+	var usage, finished, check_internet_connection, connected, override string
 	if userLanguage == "ru" {
-		usage = "Использование: godl [-n filename] [-p] [-stdout] [-sha2sum] URL..."
+		usage = "Использование: godl [-n filename] [-p] [-stdout] [-sha2sum] [-override] URL..."
 		logic.File_download = "Загрузка файла"
 		finished = "окончена!"
 		check_internet_connection = "Ошибка: Проверьте подключение к интернету!"
 		connected = "Соединение установлено!"
+		override = "Ошибка: Такой файл уже существует! Если вы хотите его перезаписать, используйте -override."
 	} else if userLanguage == "uk" {
-		usage = "Використання: godl [-n filename] [-p] [-stdout] [-sha2sum] URL..."
+		usage = "Використання: godl [-n filename] [-p] [-stdout] [-sha2sum] [-override] URL..."
 		logic.File_download = "Завантаження файлу"
 		finished = "закінчено!"
 		check_internet_connection = "Помилка: Перевірте підключення до інтернету!"
 		connected = "З'єднання встановлено!"
+		override = "Помилка: Такий файл вже існує! Якщо ви бажаєте його перезаписати, використовуйте -override."
 	} else {
-		usage = "Usage: godl [-n filename] [-p] [-stdout] [-sha2sum] URL..."
+		usage = "Usage: godl [-n filename] [-p] [-stdout] [-sha2sum] [-override] URL..."
 		logic.File_download = "Downloading file"
 		finished = "finished!"
 		check_internet_connection = "Error: Check internet connection!"
 		connected = "Connection established!"
+		override = "Error: Such file already exists! If you want to overwrite it, use -override."
 	}
 
 	// Check for args amount
@@ -49,11 +52,13 @@ func main() {
 
 	// Set flags and args
 	var filename string
-	var stdout, sha2sum bool
+	var stdout, sha2sum, override_bool bool
 	flag.StringVar(&filename, "n", "", "Указать пользовательское название файла")
 	flag.BoolVar(&logic.Progress, "p", false, "Использовать прогресс-бар")
 	flag.BoolVar(&stdout, "stdout", false, "Вывести содержимое через stdout")
 	flag.BoolVar(&sha2sum, "sha2sum", false, "Посчитать sha2sum для выходного файла")
+	flag.BoolVar(&override_bool, "override", false, "Перезаписывать существующий файл")
+
 	flag.Parse()
 
 	logic.FileUrl = flag.Arg(0)
@@ -64,6 +69,12 @@ func main() {
 		logic.FileName = path.Base(r.URL.Path)
 	} else {
 		logic.FileName = filename
+	}
+
+	logic.FileExist(logic.FileName)
+	if logic.Exists == true && override_bool == false {
+		fmt.Println(override)
+		os.Exit(0)
 	}
 
 	// Check internet connection (ping url)

@@ -23,7 +23,7 @@ func main() {
 	userLanguage, _ := locale.GetLanguage()
 
 	// Locatization
-	var usage, finished, check_internet_connection, connected, override, ver, c_type, file_download string
+	var usage, finished, check_internet_connection, connected, override, ver, c_type, file_download, error_url string
 	if userLanguage == "ru" {
 		usage = "Использование: godl [ПАРАМЕТРЫ]... [URL]...\n"
 		file_download = "\nЗагрузка файла"
@@ -34,6 +34,7 @@ func main() {
 		override = "Ошибка: Такой файл уже существует! Если вы хотите его перезаписать, используйте --override или -o.\n"
 		ver = "Версия программы - 1.0.0"
 		c_type = "Тип контента:"
+		error_url = "Ошибка: Введён неверный URL-адрес"
 	} else if userLanguage == "uk" {
 		usage = "Використання: godl [ПАРАМЕТРИ]... [URL]..."
 		dl.File_download = "Завантаження файлу"
@@ -44,6 +45,7 @@ func main() {
 		override = "Помилка: Такий файл вже існує! Якщо ви бажаєте його перезаписати, використовуйте --override чи -o.\n"
 		ver = "Версія програми – 1.0.0"
 		c_type = "Тип контенту:"
+		error_url = "Помилка: Введено неправильну URL-адресу"
 	} else {
 		usage = "Usage: godl [OPTIONS]... [URL]..."
 		dl.File_download = "Downloading file"
@@ -54,6 +56,7 @@ func main() {
 		override = "Error: Such file already exists! If you want to overwrite it, use --override or -o."
 		ver = "Program version - 1.0.0"
 		c_type = "Content Type:"
+		error_url = "Error: Invalid URL entered"
 	}
 
 	// Set custom message on error
@@ -78,6 +81,12 @@ func main() {
 
 	dl.FileUrl = flag.Arg(0)
 
+	if dl.FileUrl == "" {
+		fmt.Print(usage)
+		flag.PrintDefaults()
+		os.Exit(0)
+	}
+
 	// Version number
 	if version && len(os.Args) == 2 {
 		fmt.Println(ver)
@@ -98,6 +107,13 @@ func main() {
 	} else {
 		dl.FileName = filename
 	}
+
+	if dl.FileName == "." || dl.FileName == "" {
+		fmt.Println(error_url)
+		os.Exit(0)
+	}
+
+	fmt.Println(dl.FileName)
 
 	// Check if exists
 	checks.FileExist(dl.FileName)

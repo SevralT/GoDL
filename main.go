@@ -6,7 +6,9 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"path"
 
@@ -108,12 +110,21 @@ func main() {
 		println(connected)
 	}
 
+	// Get website ip
+	u, _ := url.Parse(logic.FileUrl)
+	ips, _ := net.LookupIP(u.Hostname())
+
 	// Use stdout or download file
 	if stdout {
 		logic.Stdout(logic.FileUrl)
 	} else {
 		logic.DownloadFile(logic.FileUrl, logic.FileName)
 		if logic.QuiteMode == false {
+			for _, ip := range ips {
+				if ipv4 := ip.To4(); ipv4 != nil {
+					fmt.Println("IPv4:", ipv4)
+				}
+			}
 			file, _ := os.Open(logic.FileName)
 			defer file.Close()
 			contentType, _ := logic.GetFileContentType(file)

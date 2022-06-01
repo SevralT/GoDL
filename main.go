@@ -22,28 +22,31 @@ func main() {
 	userLanguage, _ := locale.GetLanguage()
 
 	// Locatization
-	var usage, finished, check_internet_connection, connected, override, ver, c_type string
+	var usage, finished, check_internet_connection, connected, override, ver, c_type, file_download string
 	if userLanguage == "ru" {
 		usage = "Использование: godl [ПАРАМЕТРЫ]... [URL]...\n"
+		file_download = "\nЗагрузка файла"
 		logic.File_download = "Загрузка файла"
 		finished = "окончена!"
 		check_internet_connection = "Ошибка: Проверьте подключение к интернету!"
 		connected = "Соединение установлено!"
-		override = "Ошибка: Такой файл уже существует! Если вы хотите его перезаписать, используйте -override.\n"
+		override = "Ошибка: Такой файл уже существует! Если вы хотите его перезаписать, используйте --override или -o.\n"
 		ver = "Версия программы - 1.0.0"
 		c_type = "Тип контента:"
 	} else if userLanguage == "uk" {
 		usage = "Використання: godl [ПАРАМЕТРИ]... [URL]..."
 		logic.File_download = "Завантаження файлу"
+		file_download = "\rЗавантаження файлу"
 		finished = "закінчено!"
 		check_internet_connection = "Помилка: Перевірте підключення до інтернету!"
 		connected = "З'єднання встановлено!"
-		override = "Помилка: Такий файл вже існує! Якщо ви бажаєте його перезаписати, використовуйте -override.\n"
+		override = "Помилка: Такий файл вже існує! Якщо ви бажаєте його перезаписати, використовуйте --override чи -o.\n"
 		ver = "Версія програми – 1.0.0"
 		c_type = "Тип контенту:"
 	} else {
 		usage = "Usage: godl [OPTIONS]... [URL]..."
 		logic.File_download = "Downloading file"
+		file_download = "\rDownloading file"
 		finished = "finished!"
 		check_internet_connection = "Error: Check internet connection!"
 		connected = "Connection established!"
@@ -118,18 +121,19 @@ func main() {
 	if stdout {
 		logic.Stdout(logic.FileUrl)
 	} else {
-		logic.DownloadFile(logic.FileUrl, logic.FileName)
 		if logic.QuiteMode == false {
 			for _, ip := range ips {
 				if ipv4 := ip.To4(); ipv4 != nil {
 					fmt.Println("IPv4:", ipv4)
 				}
 			}
-			file, _ := os.Open(logic.FileName)
-			defer file.Close()
-			contentType, _ := logic.GetFileContentType(file)
+			contentType := logic.GetFileContentType()
 			fmt.Println(c_type, contentType)
-			fmt.Println(logic.File_download, logic.FileName, finished)
+			fmt.Println()
+		}
+		logic.DownloadFile(logic.FileUrl, logic.FileName)
+		if logic.QuiteMode == false {
+			fmt.Println(file_download, logic.FileName, finished)
 		}
 		// Optionally calculate sha2sum
 		if hash {

@@ -86,19 +86,10 @@ func FileExist(filename string) error {
 }
 
 // Detect content type
-func GetFileContentType(seeker io.ReadSeeker) (string, error) {
-	buffer := make([]byte, 512)
-
-	_, err := seeker.Seek(0, io.SeekStart)
-	if err != nil {
-		return "", err
-	}
-
-	bytesRead, err := seeker.Read(buffer)
-	if err != nil && err != io.EOF {
-		return "", err
-	}
-
-	buffer = buffer[:bytesRead]
-	return http.DetectContentType(buffer), nil
+func GetFileContentType() (filetype string) {
+	client := http.Client{}
+	req, _ := http.NewRequest("HEAD", FileUrl, nil)
+	req.Header.Set("Accept", "*/*")
+	resp, _ := client.Do(req)
+	return resp.Header.Get("Content-Type")
 }

@@ -82,7 +82,7 @@ func main() {
 
 	dl.FileUrl = flag.Arg(0)
 
-	if dl.FileUrl == "" {
+	if dl.FileUrl == "" && !version {
 		fmt.Print(usage)
 		flag.PrintDefaults()
 		os.Exit(0)

@@ -6,9 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io/ioutil"
-	"net"
 	"net/http"
-	"net/url"
 	"os"
 	"path"
 
@@ -23,13 +21,14 @@ func main() {
 	userLanguage, _ := locale.GetLanguage()
 
 	// Locatization
-	var usage, finished, check_internet_connection, connected, override, ver, c_type, file_download, error_url string
+	var usage, finished, check_internet_connection1, check_internet_connection2, connected, override, ver, c_type, file_download, error_url string
 	if userLanguage == "ru" {
 		usage = "Использование: godl [ПАРАМЕТРЫ]... [URL]...\n"
 		file_download = "\nЗагрузка файла"
 		dl.File_download = "Загрузка файла"
 		finished = "окончена!"
-		check_internet_connection = "Ошибка: Проверьте подключение к интернету!"
+		check_internet_connection1 = "Ошибка: Не удалось поключится к "
+		check_internet_connection2 = "Проверьте подключение к интернету!"
 		connected = "Соединение установлено!"
 		override = "Ошибка: Такой файл уже существует! Если вы хотите его перезаписать, используйте --override или -o.\n"
 		ver = "Версия программы - 1.0.0"
@@ -40,7 +39,8 @@ func main() {
 		dl.File_download = "Завантаження файлу"
 		file_download = "\rЗавантаження файлу"
 		finished = "закінчено!"
-		check_internet_connection = "Помилка: Перевірте підключення до інтернету!"
+		check_internet_connection1 = "Помилка: Не вдалося підключитися до "
+		check_internet_connection2 = "Перевірте підключення до інтернету!"
 		connected = "З'єднання встановлено!"
 		override = "Помилка: Такий файл вже існує! Якщо ви бажаєте його перезаписати, використовуйте --override чи -o.\n"
 		ver = "Версія програми – 1.0.0"
@@ -51,7 +51,8 @@ func main() {
 		dl.File_download = "Downloading file"
 		file_download = "\rDownloading file"
 		finished = "finished!"
-		check_internet_connection = "Error: Check internet connection!"
+		check_internet_connection1 = "Error: Could not connect to "
+		check_internet_connection2 = "Please check your internet connection!"
 		connected = "Connection established!"
 		override = "Error: Such file already exists! If you want to overwrite it, use --override or -o."
 		ver = "Program version - 1.0.0"
@@ -113,8 +114,6 @@ func main() {
 		os.Exit(0)
 	}
 
-	fmt.Println(dl.FileName)
-
 	// Check if exists
 	checks.FileExist(dl.FileName)
 	if dl.Exists && !override_bool {
@@ -124,26 +123,18 @@ func main() {
 
 	// Check internet connection (ping url)
 	if !checks.Connected() {
-		fmt.Println(check_internet_connection)
+		fmt.Print(check_internet_connection1, checks.GetDomain(), "\n", check_internet_connection2, "\n")
 		os.Exit(0)
-	} else if !dl.QuiteMode {
+	} else if !dl.QuiteMode && !stdout {
 		println(connected)
 	}
-
-	// Get website ip
-	u, _ := url.Parse(dl.FileUrl)
-	ips, _ := net.LookupIP(u.Hostname())
 
 	// Use stdout or download file
 	if stdout {
 		dl.Stdout(dl.FileUrl)
 	} else {
 		if dl.QuiteMode == false {
-			for _, ip := range ips {
-				if ipv4 := ip.To4(); ipv4 != nil {
-					fmt.Println("IPv4:", ipv4)
-				}
-			}
+			fmt.Println("IPv4:", checks.GetIP())
 			contentType := checks.GetFileContentType()
 			fmt.Println(c_type, contentType)
 			fmt.Println()

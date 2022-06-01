@@ -1,4 +1,4 @@
-package logic
+package dl
 
 // Import required packages
 import (
@@ -49,16 +49,6 @@ func DownloadFile(url string, filepath string) error {
 	return nil
 }
 
-// Function for check internet connections
-func Connected() (ok bool) {
-	// "Download file"
-	_, err := http.Get(FileUrl)
-	if err != nil {
-		return false
-	}
-	return true
-}
-
 // Function for stdout
 func Stdout(url string) error {
 	// "Download" file
@@ -72,24 +62,4 @@ func Stdout(url string) error {
 	// Output file content
 	fmt.Println(bodyString)
 	return nil
-}
-
-// Check if file exists
-func FileExist(filename string) error {
-	_, err := os.Stat(FileName)
-	if os.IsNotExist(err) {
-		Exists = false
-	} else {
-		Exists = true
-	}
-	return nil
-}
-
-// Detect content type
-func GetFileContentType() (filetype string) {
-	client := http.Client{}
-	req, _ := http.NewRequest("HEAD", FileUrl, nil)
-	req.Header.Set("Accept", "*/*")
-	resp, _ := client.Do(req)
-	return resp.Header.Get("Content-Type")
 }

@@ -22,7 +22,7 @@ func DownloadFile(url string, filepath string) error {
 	defer resp.Body.Close()
 
 	// Create temp file for download
-	temp, _ := os.Create(filepath + ".godl")
+	temp, _ := os.Create(filepath + ".tmp")
 	defer temp.Close()
 
 	// Use progress bar or no
@@ -45,7 +45,7 @@ func DownloadFile(url string, filepath string) error {
 	}
 
 	// Rename temp file
-	os.Rename(FileName+".godl", FileName)
+	os.Rename(FileName+".tmp", FileName)
 	return nil
 }
 

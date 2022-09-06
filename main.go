@@ -115,8 +115,7 @@ func main() {
 	}
 
 	// Check if exists
-	checks.FileExist(dl.FileName)
-	if dl.Exists && !override_bool {
+	if checks.FileExist() && !override_bool {
 		fmt.Println(override)
 		os.Exit(0)
 	}

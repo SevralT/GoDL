@@ -20,14 +20,13 @@ func Connected() (ok bool) {
 }
 
 // Check if file exists
-func FileExist(filename string) error {
+func FileExist() bool {
 	_, err := os.Stat(dl.FileName)
 	if os.IsNotExist(err) {
-		dl.Exists = false
+		return false
 	} else {
-		dl.Exists = true
+		return true
 	}
-	return nil
 }
 
 // Detect content type

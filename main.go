@@ -132,14 +132,14 @@ func main() {
 	if stdout {
 		dl.Stdout(dl.FileUrl)
 	} else {
-		if dl.QuiteMode == false {
+		if !dl.QuiteMode {
 			fmt.Println("IPv4:", checks.GetIP())
 			contentType := checks.GetFileContentType()
 			fmt.Println(c_type, contentType)
 			fmt.Println()
 		}
 		dl.DownloadFile(dl.FileUrl, dl.FileName)
-		if dl.QuiteMode == false {
+		if !dl.QuiteMode {
 			fmt.Println(file_download, dl.FileName, finished)
 		}
 		// Optionally calculate sha2sum

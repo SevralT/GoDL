@@ -26,8 +26,8 @@ func DownloadFile(url string, filepath string) error {
 	defer temp.Close()
 
 	// Use progress bar or no
-	if Progress == false {
-		if QuiteMode == false {
+	if !Progress {
+		if !QuiteMode {
 			total := progressbar.DefaultBytes(
 				-1,
 				File_download,
@@ -36,7 +36,7 @@ func DownloadFile(url string, filepath string) error {
 		} else {
 			io.Copy(io.MultiWriter(temp), resp.Body)
 		}
-	} else if Progress == true {
+	} else if Progress {
 		bar := progressbar.DefaultBytes(
 			resp.ContentLength,
 			File_download,

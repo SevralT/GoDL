@@ -9,16 +9,9 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-
-
 	"github.com/schollz/progressbar/v3"
+	"github.com/SevralT/GoDL/vars"
 )
-
-// Set global variables
-var FileName, FileUrl, File_download string
-var Username, Password string
-var ProxyServer, ProxyPort string
-var Progress, Exists, QuiteMode bool
 
 // Function for file download
 func DownloadFile(url string, filepath string) error {
@@ -37,26 +30,20 @@ func DownloadFile(url string, filepath string) error {
 	defer temp.Close()
 
 	// Use progress bar or no
-	if !Progress {
-		if !QuiteMode {
-			total := progressbar.DefaultBytes(
-				-1,
-				File_download,
-			)
+	if !vars.Progress {
+		if !vars.QuiteMode {
+			total := progressbar.DefaultBytes(-1, vars.File_download)
 			io.Copy(io.MultiWriter(temp, total), resp.Body)
 		} else {
 			io.Copy(io.MultiWriter(temp), resp.Body)
 		}
-	} else if Progress {
-		bar := progressbar.DefaultBytes(
-			resp.ContentLength,
-			File_download,
-		)
+	} else if vars.Progress {
+		bar := progressbar.DefaultBytes(resp.ContentLength, vars.File_download)
 		io.Copy(io.MultiWriter(temp, bar), resp.Body)
 	}
 
 	// Rename temp file
-	os.Rename(FileName+".tmp", FileName)
+	os.Rename(vars.FileName+".tmp", vars.FileName)
 	return nil
 }
 
@@ -86,9 +73,9 @@ func Stdout(url string) error {
 // Function for http auth
 func getAuth() http.Header {
 	// Check if username and password are set
-	if Username != "" && Password != "" {
+	if vars.Username != "" && vars.Password != "" {
 		// Create auth header
-		auth := Username + ":" + Password
+		auth := vars.Username + ":" + vars.Password
 		authHeader := "Basic " + base64.StdEncoding.EncodeToString([]byte(auth))
 		header := http.Header{}
 		header.Add("Authorization", authHeader)
@@ -101,11 +88,11 @@ func getAuth() http.Header {
 // Function for proxy server
 func getClient() *http.Client {
 	// Check if proxy server is setted
-	if ProxyServer != "" {
+	if vars.ProxyServer != "" {
 		// Check if proxy port is setted
-		if ProxyPort != "" {
+		if vars.ProxyPort != "" {
 			// Create proxy url
-			proxyUrl, _ := url.Parse("http://" + ProxyServer + ":" + ProxyPort)
+			proxyUrl, _ := url.Parse("http://" + vars.ProxyServer + ":" + vars.ProxyPort)
 			// Create client
 			client := &http.Client{
 				Transport: &http.Transport{
@@ -115,7 +102,7 @@ func getClient() *http.Client {
 			return client
 		} else {
 			// Create proxy url
-			proxyUrl, _ := url.Parse("http://" + ProxyServer + ":8080")
+			proxyUrl, _ := url.Parse("http://" + vars.ProxyServer + ":8080")
 			// Create client
 			client := &http.Client{
 				Transport: &http.Transport{

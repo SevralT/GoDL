@@ -9,15 +9,13 @@ import (
 	"os"
 	"strings"
 	"encoding/base64"
-	
-
-	"github.com/SevralT/GoDL/dl"
+	"github.com/SevralT/GoDL/vars"
 )
 
 // Function for check internet connections
 func Connected() (ok bool) {
 	// "Download file"
-	_, err := http.Get(dl.FileUrl)
+	_, err := http.Get(vars.FileUrl)
 	if err != nil {
 		return false
 	}
@@ -26,7 +24,7 @@ func Connected() (ok bool) {
 
 // Check if file exists
 func FileExist() bool {
-	_, err := os.Stat(dl.FileName)
+	_, err := os.Stat(vars.FileName)
 	if os.IsNotExist(err) {
 		return false
 	} else {
@@ -37,14 +35,14 @@ func FileExist() bool {
 // Detect content type
 func GetFileContentType() (filetype string) {
 	client := http.Client{}
-	req, _ := http.NewRequest("HEAD", dl.FileUrl, nil)
+	req, _ := http.NewRequest("HEAD", vars.FileUrl, nil)
 	req.Header.Set("Accept", "*/*")
 	resp, _ := client.Do(req)
 	return resp.Header.Get("Content-Type")
 }
 
 func GetDomain() (domain string) {
-	u, _ := url.Parse(dl.FileUrl)
+	u, _ := url.Parse(vars.FileUrl)
 	return u.Hostname()
 }
 
@@ -62,7 +60,7 @@ func GetIP() (ip net.IP) {
 
 func CheckFileAvailability() (ok bool) {
 	client := &http.Client{}
-	req, _ := http.NewRequest("HEAD", dl.FileUrl, nil)
+	req, _ := http.NewRequest("HEAD", vars.FileUrl, nil)
 	req.Header.Set("Accept", "*/*")
 	req.Header = getAuth()
 	resp, err := client.Do(req)
@@ -79,7 +77,7 @@ func CheckFileAvailability() (ok bool) {
 
 func GetRedirect() (redirect string) {
 	client := &http.Client{}
-	req, _ := http.NewRequest("HEAD", dl.FileUrl, nil)
+	req, _ := http.NewRequest("HEAD", vars.FileUrl, nil)
 	req.Header.Set("Accept", "*/*")
 	resp, err := client.Do(req)
 	if err != nil {
@@ -97,9 +95,9 @@ func GetRedirect() (redirect string) {
 // Function for http auth
 func getAuth() http.Header {
 	// Check if username and password are set
-	if dl.Username != "" && dl.Password != "" {
+	if vars.Username != "" && vars.Password != "" {
 		// Create auth header
-		auth := dl.Username + ":" + dl.Password
+		auth := vars.Username + ":" + vars.Password
 		authHeader := "Basic " + base64.StdEncoding.EncodeToString([]byte(auth))
 		header := http.Header{}
 		header.Add("Authorization", authHeader)

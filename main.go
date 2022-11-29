@@ -79,6 +79,8 @@ func main() {
 	flag.BoolVarP(&hash, "hash", "h", false, "Посчитать sha2sum для выходного файла")
 	flag.BoolVarP(&override_bool, "override", "o", false, "Перезаписывать существующий файл")
 	flag.BoolVarP(&dl.QuiteMode, "quite", "q", false, "Тихий режим")
+	flag.StringVarP(&dl.Username, "http-user", "", "", "Имя пользователя для HTTP-протокола")
+	flag.StringVarP(&dl.Password, "http-pass", "", "", "Пароль для HTTP-протокола")
 	flag.BoolVarP(&version, "version", "v", false, "Номер версии программы")
 
 	flag.Parse()

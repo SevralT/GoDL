@@ -8,6 +8,8 @@ import (
 	"net/http/httputil"
 	"os"
 	"strings"
+	"encoding/base64"
+	
 
 	"github.com/SevralT/GoDL/dl"
 )
@@ -62,6 +64,7 @@ func CheckFileAvailability() (ok bool) {
 	client := &http.Client{}
 	req, _ := http.NewRequest("HEAD", dl.FileUrl, nil)
 	req.Header.Set("Accept", "*/*")
+	req.Header = getAuth()
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Println(err)
@@ -88,5 +91,20 @@ func GetRedirect() (redirect string) {
 	} else {
 		dump, _ := httputil.DumpResponse(resp, true)
 		return strings.Split(string(dump), "\n")[7]
+	}
+}
+
+// Function for http auth
+func getAuth() http.Header {
+	// Check if username and password are set
+	if dl.Username != "" && dl.Password != "" {
+		// Create auth header
+		auth := dl.Username + ":" + dl.Password
+		authHeader := "Basic " + base64.StdEncoding.EncodeToString([]byte(auth))
+		header := http.Header{}
+		header.Add("Authorization", authHeader)
+		return header
+	} else {
+		return nil
 	}
 }

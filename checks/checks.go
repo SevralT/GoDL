@@ -1,10 +1,13 @@
 package checks
 
 import (
+	"fmt"
 	"net"
 	"net/http"
 	"net/url"
+	"net/http/httputil"
 	"os"
+	"strings"
 
 	"github.com/SevralT/GoDL/dl"
 )
@@ -51,6 +54,39 @@ func GetIP() (ip net.IP) {
 		if ipv4 := ip.To4(); ipv4 != nil {
 			return ipv4
 		}
-	}
+	} 
 	return nil
+}
+
+func CheckFileAvailability() (ok bool) {
+	client := &http.Client{}
+	req, _ := http.NewRequest("HEAD", dl.FileUrl, nil)
+	req.Header.Set("Accept", "*/*")
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode == 200 {
+		return true
+	} else {
+		return false
+	}
+}
+
+func GetRedirect() (redirect string) {
+	client := &http.Client{}
+	req, _ := http.NewRequest("HEAD", dl.FileUrl, nil)
+	req.Header.Set("Accept", "*/*")
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode == 200 {
+		return ""
+	} else {
+		dump, _ := httputil.DumpResponse(resp, true)
+		return strings.Split(string(dump), "\n")[7]
+	}
 }

@@ -21,7 +21,7 @@ func main() {
 	userLanguage, _ := locale.GetLanguage()
 
 	// Locatization
-	var usage, finished, check_internet_connection1, check_internet_connection2, connected, override, ver, c_type, file_download, error_url string
+	var usage, finished, check_internet_connection1, check_internet_connection2, connected, override, ver, c_type, file_download, error_url, file_not_available string
 	if userLanguage == "ru" {
 		usage = "Использование: godl [ПАРАМЕТРЫ]... [URL]...\n"
 		file_download = "\nЗагрузка файла"
@@ -34,6 +34,7 @@ func main() {
 		ver = "Версия программы - 1.0.0"
 		c_type = "Тип контента:"
 		error_url = "Ошибка: Введён неверный URL-адрес"
+		file_not_available = "Ошибка: Файл недоступен"
 	} else if userLanguage == "uk" {
 		usage = "Використання: godl [ПАРАМЕТРИ]... [URL]..."
 		dl.File_download = "Завантаження файлу"
@@ -46,6 +47,7 @@ func main() {
 		ver = "Версія програми – 1.0.0"
 		c_type = "Тип контенту:"
 		error_url = "Помилка: Введено неправильну URL-адресу"
+		file_not_available = "Помилка: Файл недоступний"
 	} else {
 		usage = "Usage: godl [OPTIONS]... [URL]..."
 		dl.File_download = "Downloading file"
@@ -58,6 +60,7 @@ func main() {
 		ver = "Program version - 1.0.0"
 		c_type = "Content Type:"
 		error_url = "Error: Invalid URL entered"
+		file_not_available = "Error: File not available"
 	}
 
 	// Set custom message on error
@@ -126,6 +129,12 @@ func main() {
 		os.Exit(0)
 	} else if !dl.QuiteMode && !stdout {
 		println(connected)
+	}
+
+	// Check file availibility on remote servee
+	if !checks.CheckFileAvailability() && !dl.QuiteMode {
+		fmt.Print(file_not_available)
+		os.Exit(0)
 	}
 
 	// Use stdout or download file

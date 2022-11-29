@@ -81,6 +81,8 @@ func main() {
 	flag.BoolVarP(&dl.QuiteMode, "quite", "q", false, "Тихий режим")
 	flag.StringVarP(&dl.Username, "http-user", "", "", "Имя пользователя для HTTP-протокола")
 	flag.StringVarP(&dl.Password, "http-pass", "", "", "Пароль для HTTP-протокола")
+	flag.StringVarP(&dl.ProxyServer, "proxy", "", "", "Прокси-сервер")
+	flag.StringVarP(&dl.ProxyPort, "proxy-port", "", "", "Порт прокси-сервера")
 	flag.BoolVarP(&version, "version", "v", false, "Номер версии программы")
 
 	flag.Parse()

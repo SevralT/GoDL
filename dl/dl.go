@@ -2,23 +2,24 @@ package dl
 
 // Import required packages
 import (
-	"encoding/base64"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"os"
-	"github.com/schollz/progressbar/v3"
+
+	"github.com/SevralT/GoDL/auth"
+	"github.com/SevralT/GoDL/proxy"
 	"github.com/SevralT/GoDL/vars"
+	"github.com/schollz/progressbar/v3"
 )
 
 // Function for file download
 func DownloadFile(url string, filepath string) error {
 	// Download file
-	client := getClient()
+	client := proxy.GetProxyClient()
 	req, err := http.NewRequest("GET", url, nil)
-	req.Header = getAuth()
+	req.Header = auth.GetAuth()
 	resp, err := client.Do(req)
 	if err != nil {
 		return err
@@ -50,9 +51,9 @@ func DownloadFile(url string, filepath string) error {
 // Function for stdout
 func Stdout(url string) error {
 	// "Download" file
-	client := getClient()
+	client := proxy.GetProxyClient()
 	req, err := http.NewRequest("GET", url, nil)
-	req.Header = getAuth()
+	req.Header = auth.GetAuth()
 	resp, err := client.Do(req)
 	if err != nil {
 		return err
@@ -68,52 +69,4 @@ func Stdout(url string) error {
 	// Output file content
 	fmt.Println(bodyString)
 	return nil
-}
-
-// Function for http auth
-func getAuth() http.Header {
-	// Check if username and password are set
-	if vars.Username != "" && vars.Password != "" {
-		// Create auth header
-		auth := vars.Username + ":" + vars.Password
-		authHeader := "Basic " + base64.StdEncoding.EncodeToString([]byte(auth))
-		header := http.Header{}
-		header.Add("Authorization", authHeader)
-		return header
-	} else {
-		return nil
-	}
-}
-
-// Function for proxy server
-func getClient() *http.Client {
-	// Check if proxy server is setted
-	if vars.ProxyServer != "" {
-		// Check if proxy port is setted
-		if vars.ProxyPort != "" {
-			// Create proxy url
-			proxyUrl, _ := url.Parse("http://" + vars.ProxyServer + ":" + vars.ProxyPort)
-			// Create client
-			client := &http.Client{
-				Transport: &http.Transport{
-					Proxy: http.ProxyURL(proxyUrl),
-				},
-			}
-			return client
-		} else {
-			// Create proxy url
-			proxyUrl, _ := url.Parse("http://" + vars.ProxyServer + ":8080")
-			// Create client
-			client := &http.Client{
-				Transport: &http.Transport{
-					Proxy: http.ProxyURL(proxyUrl),
-				},
-			}
-			return client
-		}
-	} else {
-		// Create client
-		client := &http.Client{}
-		return client
-	}
 }

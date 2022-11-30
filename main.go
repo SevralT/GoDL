@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+
 	"github.com/SevralT/GoDL/checks"
 	"github.com/SevralT/GoDL/dl"
 	"github.com/SevralT/GoDL/upload"
@@ -23,6 +24,7 @@ func main() {
 
 	// Locatization
 	var usage, finished, check_internet_connection1, check_internet_connection2, connected, override, ver, c_type, file_download, error_url, file_not_available, file_upload string
+	var versia = "1.2.0"
 	if userLanguage == "ru" {
 		usage = "Использование: godl [ПАРАМЕТРЫ]... [URL]... [ИМЯ ФАЙЛА (НЕОБЯЗАТЕЛЬНО)]\n"
 		file_download = "\nЗагрузка файла"
@@ -32,7 +34,7 @@ func main() {
 		check_internet_connection2 = "Проверьте подключение к интернету!"
 		connected = "Соединение установлено!"
 		override = "Ошибка: Такой файл уже существует! Если вы хотите его перезаписать, используйте --override или -o.\n"
-		ver = "Версия программы - 1.2.0"
+		ver = "Версия программы -"
 		c_type = "Тип контента:"
 		error_url = "Ошибка: Введён неверный URL-адрес"
 		file_not_available = "Ошибка: Файл недоступен"
@@ -46,7 +48,7 @@ func main() {
 		check_internet_connection2 = "Перевірте підключення до інтернету!"
 		connected = "З'єднання встановлено!"
 		override = "Помилка: Такий файл вже існує! Якщо ви бажаєте його перезаписати, використовуйте --override чи -o.\n"
-		ver = "Версія програми – 1.2.0"
+		ver = "Версія програми –"
 		c_type = "Тип контенту:"
 		error_url = "Помилка: Введено неправильну URL-адресу"
 		file_not_available = "Помилка: Файл недоступний"
@@ -60,7 +62,7 @@ func main() {
 		check_internet_connection2 = "Please check your internet connection!"
 		connected = "Connection established!"
 		override = "Error: Such file already exists! If you want to overwrite it, use --override or -o."
-		ver = "Program version - 1.2.0"
+		ver = "Program version -"
 		c_type = "Content Type:"
 		error_url = "Error: Invalid URL entered"
 		file_not_available = "Error: File not available"
@@ -102,7 +104,7 @@ func main() {
 
 	// Version number
 	if version && len(os.Args) == 2 {
-		fmt.Println(ver)
+		fmt.Println(ver, versia)
 		os.Exit(0)
 	}
 
@@ -114,7 +116,7 @@ func main() {
 	}
 
 	// Set filename
-	if (flag.Arg(1) != "") {
+	if flag.Arg(1) != "" {
 		vars.FileName = flag.Arg(1)
 	} else if filename == "" {
 		r, _ := http.NewRequest("GET", vars.FileUrl, nil)
@@ -129,7 +131,7 @@ func main() {
 	}
 
 	// Check if exists
-	if checks.FileExist() && !override_bool {
+	if checks.FileExist() && !override_bool && !upload_check {
 		fmt.Println(override)
 		os.Exit(0)
 	}
@@ -142,7 +144,7 @@ func main() {
 		println(connected)
 	}
 
-	// Check file availibility on remote servee
+	// Check file availibility on remote server
 	if !checks.CheckFileAvailability() && !vars.QuiteMode {
 		fmt.Print(file_not_available)
 		os.Exit(0)
@@ -181,5 +183,5 @@ func main() {
 			fmt.Println(file_upload, vars.FileName, finished)
 		}
 	}
-	
+
 }

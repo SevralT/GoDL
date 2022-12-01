@@ -9,7 +9,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/SevralT/GoDL/auth"
+	"github.com/SevralT/GoDL/http/auth"
 	"github.com/SevralT/GoDL/vars"
 )
 

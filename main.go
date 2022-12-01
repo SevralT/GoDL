@@ -11,8 +11,8 @@ import (
 	"path"
 
 	"github.com/SevralT/GoDL/checks"
-	"github.com/SevralT/GoDL/dl"
-	"github.com/SevralT/GoDL/upload"
+	"github.com/SevralT/GoDL/http/dl"
+	"github.com/SevralT/GoDL/http/upload"
 	"github.com/SevralT/GoDL/vars"
 	"github.com/jeandeaual/go-locale"
 	flag "github.com/spf13/pflag"

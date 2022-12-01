@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/SevralT/GoDL/auth"
-	"github.com/SevralT/GoDL/proxy"
+	"github.com/SevralT/GoDL/http/auth"
+	"github.com/SevralT/GoDL/http/proxy"
 	"github.com/SevralT/GoDL/vars"
 	"github.com/schollz/progressbar/v3"
 )
